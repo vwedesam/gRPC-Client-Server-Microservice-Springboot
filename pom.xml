@@ -16,7 +16,9 @@
 	<description>gRPC project for Spring Boot</description>
     <modules>
         <module>proto</module>
-    </modules>
+        <module>grpc-server</module>
+		<module>grpc-client</module>
+	</modules>
     <properties>
 		<java.version>11</java.version>
 	</properties>
