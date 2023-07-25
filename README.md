@@ -18,3 +18,7 @@ This will generate proto buff client binding for java
 
 ```
 
+## .proto compile/build help
+
+https://github.com/grpc/grpc-java
+

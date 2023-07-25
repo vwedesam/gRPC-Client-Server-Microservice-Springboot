@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 
-package com.vwedesam;
+package com.vwedesam.grpc;
 
 option java_multiple_files = true;
 
