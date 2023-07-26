@@ -1,0 +1,6 @@
+
+grpc:
+  client:
+    grpc-vwedesam-server:
+      address: static://localhost:9090
+      negotiationType: plaintext
