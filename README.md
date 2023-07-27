@@ -2,6 +2,13 @@
 
 A Client-Server gRPC Microservice with Java(spring-boot)
 
+## RPC implementation/Type
+
+1. `Unary RPC`: the client sends a single request and receives a single response.
+2. `Server streaming RPC`: the client sends a single request; in return, the server sends a stream of messages.
+3. `Client streaming RPC`: the client sends a stream of messages, and the server responds with a single message.
+4. `Bidirectional streaming RPC`: in bidirectional streaming, both the client and server send a stream of messages.
+
 ## install dependencies
 
 ```sh
@@ -38,12 +45,12 @@ https://github.com/grpc/grpc-java
 
 ```
 
-## Endpoints
+## Client Endpoints
 
 ```shell
 
     http://localhost:8080/author/{id}
-    
+    http://localhost:8080/books/{authorId}
 
 ```
 

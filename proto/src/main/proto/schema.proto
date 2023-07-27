@@ -25,5 +25,10 @@ service BookAuthorService {
   // unary - synchronous
   rpc getAuthor(Author) returns(Author) {}
 
+  // server-streaming - asynchronous
+  rpc getBooksByAuthor(Author) returns(stream Book) {}
+
+  //
+
 }
 

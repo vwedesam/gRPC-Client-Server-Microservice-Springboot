@@ -1,6 +1,7 @@
 package com.vwedesam.server;
 
 import com.vwedesam.grpc.Author;
+import com.vwedesam.grpc.Book;
 import com.vwedesam.grpc.BookAuthorServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -19,7 +20,7 @@ public class BookAuthorServerService extends BookAuthorServiceGrpc.BookAuthorSer
 
         int authorId = request.getAuthorId();
 
-        log.info(String.valueOf(authorId));
+        log.info("authorId = "+ authorId);
 
         Optional<Author> author = TempDB.getAuthorsFromTempDb()
                     .stream()
@@ -36,5 +37,17 @@ public class BookAuthorServerService extends BookAuthorServiceGrpc.BookAuthorSer
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getBooksByAuthor(Author request, StreamObserver<Book> responseObserver) {
 
+        int authorId = request.getAuthorId();
+
+       TempDB.getBooksFromTempDb()
+                                .stream()
+                                .filter(book1 -> book1.getAuthorId() == authorId)
+                                .forEach(responseObserver::onNext);
+
+       responseObserver.onCompleted();
+
+    }
 }
