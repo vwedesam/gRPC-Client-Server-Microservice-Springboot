@@ -1,5 +1,6 @@
 package com.vwedesam.server;
 
+import com.vwedesam.db.TempDB;
 import com.vwedesam.grpc.Author;
 import com.vwedesam.grpc.Book;
 import com.vwedesam.grpc.BookAuthorServiceGrpc;
@@ -42,12 +43,44 @@ public class BookAuthorServerService extends BookAuthorServiceGrpc.BookAuthorSer
 
         int authorId = request.getAuthorId();
 
-       TempDB.getBooksFromTempDb()
+        TempDB.getBooksFromTempDb()
                                 .stream()
                                 .filter(book1 -> book1.getAuthorId() == authorId)
                                 .forEach(responseObserver::onNext);
 
        responseObserver.onCompleted();
 
+    }
+
+    @Override
+    public StreamObserver<Book> getExpensiveBook(StreamObserver<Book> responseObserver) {
+
+        return new StreamObserver<Book>() {
+            Book expensiveBook = null;
+            float priceTrack = 0;
+            @Override
+            public void onNext(Book book) {
+                if(book.getPrice() > priceTrack){
+
+                    priceTrack = book.getPrice();
+                    expensiveBook = book;
+
+                }
+
+                log.info("book Title", book.getTitle());
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                responseObserver.onError(throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onNext(expensiveBook);
+                responseObserver.onCompleted();
+            }
+        };
     }
 }

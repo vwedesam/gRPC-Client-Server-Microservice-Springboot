@@ -1,4 +1,4 @@
-package com.vwedesam.server;
+package com.vwedesam.db;
 
 import com.vwedesam.grpc.Author;
 import com.vwedesam.grpc.Book;
