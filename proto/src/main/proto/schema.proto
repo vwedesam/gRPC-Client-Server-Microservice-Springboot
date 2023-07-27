@@ -31,5 +31,8 @@ service BookAuthorService {
   // client-streaming - asynchronous
   rpc getExpensiveBook(stream Book) returns(Book) {}
 
+  // bi-directional-streaming - asynchronous
+  rpc getBooksByAuthorGender(stream Book) returns(stream Book) {}
+
 }
 

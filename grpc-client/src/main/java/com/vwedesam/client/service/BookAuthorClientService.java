@@ -39,9 +39,7 @@ public class BookAuthorClientService {
         Author authorRequest = Author.newBuilder().setAuthorId(authorId).build();
         List<Map<Descriptors.FieldDescriptor, Object>> response = new ArrayList<>();
 
-        // new StreamObserver<Book>() {} is a callback function
-        // it get called once the asynchronousClient.getBooksByAuthor request is successful
-        asynchronousClient.getBooksByAuthor(authorRequest, new StreamObserver<Book>() {
+        StreamObserver<Book> responseObserver = new StreamObserver<Book>() {
             @Override
             public void onNext(Book book) {
                 response.add(book.getAllFields());
@@ -56,7 +54,11 @@ public class BookAuthorClientService {
             public void onCompleted() {
                 countDownLatch.countDown();
             }
-        });
+        };
+
+        // new StreamObserver<Book>() {} is a callback function
+        // it get called once the asynchronousClient.getBooksByAuthor request is successful
+        asynchronousClient.getBooksByAuthor(authorRequest, responseObserver);
 
         boolean await = countDownLatch.await(1, TimeUnit.MINUTES);
 
@@ -68,9 +70,7 @@ public class BookAuthorClientService {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         final Map<String, Map<Descriptors.FieldDescriptor, Object>> response = new HashMap<>();
 
-        // new StreamObserver<Book>() {} is a callback function
-        // it get called once the asynchronousClient.getBooksByAuthor request is successful
-        StreamObserver<Book> responseObserver = asynchronousClient.getExpensiveBook(new StreamObserver<Book>() {
+        StreamObserver<Book> responseObserver = new StreamObserver<Book>() {
             @Override
             public void onNext(Book book) {
                 response.put("ExpensiveBook", book.getAllFields());
@@ -85,14 +85,59 @@ public class BookAuthorClientService {
             public void onCompleted() {
                 countDownLatch.countDown();
             }
-        });
+        };
 
-        TempDB.getBooksFromTempDb().forEach(responseObserver::onNext);
-        responseObserver.onCompleted();
+        // new StreamObserver<Book>() {} is a callback function
+        // it get called once the asynchronousClient.getBooksByAuthor request is successful
+        StreamObserver<Book> requestObserver = asynchronousClient.getExpensiveBook(responseObserver);
+
+        TempDB.getBooksFromTempDb().forEach(requestObserver::onNext);
+        requestObserver.onCompleted();
 
         boolean await = countDownLatch.await(1, TimeUnit.MINUTES);
 
         return await ? response : Collections.emptyMap();
+
+    }
+
+    public List<Map<Descriptors.FieldDescriptor, Object>> getBooksByAuthorGender(String gender) throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        List<Map<Descriptors.FieldDescriptor, Object>> response = new ArrayList<>();
+
+        StreamObserver<Book> responseObserver = new StreamObserver<Book>() {
+            @Override
+            public void onNext(Book book) {
+                response.add(book.getAllFields());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                countDownLatch.countDown();
+            }
+        };
+
+        StreamObserver<Book> requestObserver = asynchronousClient.getBooksByAuthorGender(responseObserver);
+
+        TempDB.getAuthorsFromTempDb()
+                .stream()
+                .filter(author -> author.getGender().equalsIgnoreCase(gender) )
+                .forEach(author ->
+                        requestObserver.onNext(
+                            Book.newBuilder().setAuthorId(author.getAuthorId()).build()
+                        )
+                );
+
+        requestObserver.onCompleted();
+
+        boolean await = countDownLatch.await(1, TimeUnit.MINUTES);
+
+        return await ? response : Collections.emptyList();
 
     }
 

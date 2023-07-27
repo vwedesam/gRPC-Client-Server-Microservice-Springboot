@@ -50,7 +50,12 @@ https://github.com/grpc/grpc-java
 ```shell
 
     http://localhost:8080/author/{id}
+    
     http://localhost:8080/books/{authorId}
+    
+    http://localhost:8080/books/expensive/book
+    
+    http://localhost:8080/books/author-gender/{authorGender}
 
 ```
 

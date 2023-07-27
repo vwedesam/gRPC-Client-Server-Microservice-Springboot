@@ -15,6 +15,7 @@ public class TempDB {
                 add(Author.newBuilder().setAuthorId(2).setFirstName("William").setLastName("Shakespeare").setGender("male").build());
                 add(Author.newBuilder().setAuthorId(3).setFirstName("JK").setLastName("Rowling").setGender("female").build());
                 add(Author.newBuilder().setAuthorId(4).setFirstName("Virginia").setLastName("Woolf").setGender("female").build());
+                add(Author.newBuilder().setAuthorId(5).setFirstName("Tom").setLastName("Cruise").setGender("other").build());
             }
         };
     }

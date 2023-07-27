@@ -9,6 +9,8 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @GrpcService
@@ -79,6 +81,32 @@ public class BookAuthorServerService extends BookAuthorServiceGrpc.BookAuthorSer
             @Override
             public void onCompleted() {
                 responseObserver.onNext(expensiveBook);
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+    @Override
+    public StreamObserver<Book> getBooksByAuthorGender(StreamObserver<Book> responseObserver) {
+        return new StreamObserver<Book>() {
+
+            List<Book> bookList = new ArrayList<>();
+            @Override
+            public void onNext(Book book) {
+                TempDB.getBooksFromTempDb()
+                        .stream()
+                        .filter(bookFromDB -> book.getAuthorId() == bookFromDB.getAuthorId())
+                        .forEach(bookList::add);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                responseObserver.onError(throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                bookList.forEach(responseObserver::onNext);
                 responseObserver.onCompleted();
             }
         };
